@@ -115,7 +115,16 @@ function Build-PBO {
         if (Test-Path $outLog) { Remove-Item $outLog -Force -ErrorAction SilentlyContinue }
         if (Test-Path $errLog) { Remove-Item $errLog -Force -ErrorAction SilentlyContinue }
 
-        $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -RedirectStandardOutput $outLog -RedirectStandardError $errLog -Wait -PassThru
+        Write-Host "  [DEBUG] PboProject Path: $($Config.PboProject)" -ForegroundColor DarkYellow
+        Write-Host "  [DEBUG] Argument list: $args" -ForegroundColor DarkYellow
+        Write-Host "  [DEBUG] PboProject exists: $(Test-Path $Config.PboProject)" -ForegroundColor DarkYellow
+        try {
+            $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -RedirectStandardOutput $outLog -RedirectStandardError $errLog -Wait -PassThru -ErrorAction Stop
+        } catch {
+            Write-Host "  [EXCEPTION] Failed to start PboProject: $_" -ForegroundColor Red
+            if (Test-Path $errLog) { Get-Content $errLog | ForEach-Object { Write-Host $_ } }
+            return $false
+        }
 
         # Dump captured output for diagnosis
         if (Test-Path $outLog) {
@@ -125,6 +134,12 @@ function Build-PBO {
         if (Test-Path $errLog) {
             Write-Host "`n--- PboProject STDERR ---`n"
             Get-Content $errLog | ForEach-Object { Write-Host $_ }
+        }
+
+        Write-Host "  [DEBUG] Process Id: $($process.Id)  ExitCode: $($process.ExitCode)" -ForegroundColor DarkYellow
+        if ($null -eq $process) {
+            Write-Host "  [ERROR] Process object is null - cannot determine exit code" -ForegroundColor Red
+            return $false
         }
 
         if ($process.ExitCode -eq 0) {
