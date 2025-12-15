@@ -25,7 +25,10 @@ function activate(context) {
         // Create or reuse an integrated terminal and run the script/command
         const termName = 'Askal';
         let term = vscode.window.terminals.find(t => t.name === termName);
-        if (!term) term = vscode.window.createTerminal(termName);
+        if (!term) {
+          const cwd = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0].uri.fsPath) || undefined;
+          term = vscode.window.createTerminal({ name: termName, cwd });
+        }
         term.show(true);
         term.sendText(task, true);
       })
