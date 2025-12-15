@@ -250,7 +250,9 @@ A extensão adiciona botões na barra de status para executar os scripts locais 
 -- **Auto Test:** `AUTORUN.ps1 -Action Full` (PowerShell)
 -- **Get Logs:** `AUTORUN.ps1 -Action GetLogs` (PowerShell)
 
-> Observação: os botões executam os scripts usando o terminal integrado do VS Code. Garanta que os caminhos nas variáveis do script estejam configurados para o seu ambiente.
+> Observação: os botões executam os scripts usando o terminal integrado do VS Code (criado com `cwd` na raiz do workspace). Garanta que os caminhos nas variáveis do script estejam configurados para o seu ambiente.
+
+Após reinstalar a extensão, execute `Developer: Reload Window` no Command Palette para garantir que a versão mais recente esteja ativa.
 
 ## ⚠️ Troubleshooting
 
