@@ -45,6 +45,16 @@ function activate(context) {
 
           // Mark running
           running.set(command, true);
+          // If this action includes a build (Full), lock the build button too to avoid concurrent builds
+          if (command === 'dayz.automateTest') {
+            running.set('dayz.buildPBO', true);
+            const buildItem = statusItems.get('dayz.buildPBO');
+            if (buildItem) {
+              buildItem.command = undefined;
+              buildItem.tooltip = `Locked by: ${label}`;
+              buildItem.text = `${frames[0]} Build PBO`;
+            }
+          }
 
           // Start spinner
           let idx = 0;
@@ -69,6 +79,17 @@ function activate(context) {
           proc.on('close', (code) => {
             output.appendLine(`Process exited with code ${code}`);
             running.delete(command);
+            if (command === 'dayz.automateTest') {
+              running.delete('dayz.buildPBO');
+              const buildItem = statusItems.get('dayz.buildPBO');
+              if (buildItem) {
+                clearInterval(spinnerIntervals.get('dayz.buildPBO'));
+                spinnerIntervals.delete('dayz.buildPBO');
+                buildItem.text = 'Build PBO';
+                buildItem.command = 'dayz.buildPBO';
+                buildItem.tooltip = `Run: AUTORUN.ps1 -Action Build`;
+              }
+            }
             clearInterval(spinnerIntervals.get(command));
             spinnerIntervals.delete(command);
             // show final state on button
