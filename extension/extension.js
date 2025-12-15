@@ -45,14 +45,16 @@ function activate(context) {
 
           // Mark running
           running.set(command, true);
-          // If this action includes a build (Full), lock the build button too to avoid concurrent builds
+          // If this action is Auto Test (Full), lock ALL other buttons until it finishes
           if (command === 'dayz.automateTest') {
-            running.set('dayz.buildPBO', true);
-            const buildItem = statusItems.get('dayz.buildPBO');
-            if (buildItem) {
-              buildItem.command = undefined;
-              buildItem.tooltip = `Locked by: ${label}`;
-              buildItem.text = `${frames[0]} Build PBO`;
+            for (const [k, item] of statusItems.entries()) {
+              if (k === 'dayz.automateTest') continue;
+              running.set(k, true);
+              if (item) {
+                item.command = undefined;
+                item.tooltip = `Locked by: ${label}`;
+                item.text = `${frames[0]} ${item.text.replace(/^[^ ]+ /, '')}`;
+              }
             }
           }
 
@@ -80,14 +82,29 @@ function activate(context) {
             output.appendLine(`Process exited with code ${code}`);
             running.delete(command);
             if (command === 'dayz.automateTest') {
-              running.delete('dayz.buildPBO');
-              const buildItem = statusItems.get('dayz.buildPBO');
-              if (buildItem) {
-                clearInterval(spinnerIntervals.get('dayz.buildPBO'));
-                spinnerIntervals.delete('dayz.buildPBO');
-                buildItem.text = 'Build PBO';
-                buildItem.command = 'dayz.buildPBO';
-                buildItem.tooltip = `Run: AUTORUN.ps1 -Action Build`;
+              // Unlock all buttons
+              for (const [k, item] of statusItems.entries()) {
+                if (k === 'dayz.automateTest') continue;
+                running.delete(k);
+                clearInterval(spinnerIntervals.get(k));
+                spinnerIntervals.delete(k);
+                if (item) {
+                  // restore label (remove spinner char if present)
+                  const originalLabel = item.text.replace(/^[|/\\\-] ?/, '');
+                  item.text = originalLabel;
+                  item.command = k;
+                  if (k === 'dayz.buildPBO') {
+                    item.tooltip = `Run: AUTORUN.ps1 -Action Build`;
+                  } else if (k === 'dayz.startServer') {
+                    item.tooltip = `Run: AUTORUN.ps1 -Action Server`;
+                  } else if (k === 'dayz.startClient') {
+                    item.tooltip = `Run: AUTORUN.ps1 -Action Client`;
+                  } else if (k === 'dayz.killInstances') {
+                    item.tooltip = `Run: AUTORUN.ps1 -Action Kill`;
+                  } else if (k === 'dayz.getLogs') {
+                    item.tooltip = `Run: AUTORUN.ps1 -Action GetLogs`;
+                  }
+                }
               }
             }
             clearInterval(spinnerIntervals.get(command));
