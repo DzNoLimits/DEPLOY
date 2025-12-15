@@ -1,0 +1,81 @@
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PowerShell
+*.ps1xml
+
+# Logs
+*.log
+*.RPT
+*.mdmp
+*.rpt
+
+# DayZ Server
+*.bikey
+*.biprivatekey
+*.vars.Arma3Profile
+*.dmp
+
+# Backups
+*.bak
+*.backup
+*.old
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Node (se tiver extensão VSCode)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+*.pbo
+*.pbo.*.bisign
+*.ebo
+
+# Compiled files
+*.dll
+*.exe
+*.com
+*.class
+
+# Archives
+*.zip
+*.7z
+*.rar
+
+# Keys (segurança)
+keys/
+*.bikey
+*.biprivatekey
+
+# Personal configs (cada dev tem o seu)
+config.local.ini
+paths.local.bat
+
+# OS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Test files
+test/
+tests/
+*.test.bat
+*.test.ps1

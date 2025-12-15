@@ -1,0 +1,47 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Batch files must use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# PowerShell files must use CRLF
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+
+# Shell scripts must use LF
+*.sh text eol=lf
+
+# Documentation
+*.md text
+*.txt text
+LICENSE text
+README text
+
+# Config files
+*.ini text
+*.cfg text
+*.json text
+*.yml text
+*.yaml text
+
+# Archives (binary)
+*.zip binary
+*.7z binary
+*.rar binary
+*.pbo binary
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.bmp binary
+
+# Exclude from exports
+.gitignore export-ignore
+.gitattributes export-ignore
+.editorconfig export-ignore
+.vscode/ export-ignore

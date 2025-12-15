@@ -1,0 +1,162 @@
+name: CI - Validação de Scripts
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate-powershell:
+    name: Validar Scripts PowerShell
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+    
+    - name: Instalar PSScriptAnalyzer
+      shell: powershell
+      run: |
+        Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+    
+    - name: Análise estática PowerShell
+      shell: powershell
+      run: |
+        $results = Invoke-ScriptAnalyzer -Path . -Recurse -Settings PSGallery
+        $results | Format-Table -AutoSize
+        
+        if ($results) {
+          Write-Host "::error::PSScriptAnalyzer encontrou problemas"
+          exit 1
+        }
+    
+    - name: Validar sintaxe .ps1
+      shell: powershell
+      run: |
+        $scripts = Get-ChildItem -Path . -Filter *.ps1 -Recurse
+        $errors = @()
+        
+        foreach ($script in $scripts) {
+          try {
+            $null = [System.Management.Automation.PSParser]::Tokenize(
+              (Get-Content $script.FullName -Raw), 
+              [ref]$null
+            )
+            Write-Host "✓ $($script.Name) - OK" -ForegroundColor Green
+          }
+          catch {
+            Write-Host "✗ $($script.Name) - ERRO" -ForegroundColor Red
+            Write-Host $_.Exception.Message
+            $errors += $script.Name
+          }
+        }
+        
+        if ($errors.Count -gt 0) {
+          Write-Host "::error::Erros de sintaxe encontrados em: $($errors -join ', ')"
+          exit 1
+        }
+
+  validate-batch:
+    name: Validar Scripts Batch
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+    
+    - name: Validar sintaxe .bat
+      shell: powershell
+      run: |
+        $scripts = Get-ChildItem -Path . -Filter *.bat -Recurse
+        $errors = @()
+        
+        foreach ($script in $scripts) {
+          # Verificações básicas de sintaxe
+          $content = Get-Content $script.FullName -Raw
+          
+          # Verificar if sem fechamento
+          $ifCount = ([regex]::Matches($content, '\bif\b')).Count
+          $endifCount = ([regex]::Matches($content, '\)')).Count
+          
+          # Verificar variáveis não definidas (básico)
+          $undefined = [regex]::Matches($content, '%(\w+)%') | 
+            Where-Object { $content -notmatch "set `"$($_.Groups[1].Value)=" }
+          
+          if ($undefined) {
+            Write-Host "⚠ $($script.Name) - Possíveis variáveis não definidas: $($undefined.Value -join ', ')" -ForegroundColor Yellow
+          }
+          
+          Write-Host "✓ $($script.Name) - Sintaxe básica OK" -ForegroundColor Green
+        }
+
+  documentation-check:
+    name: Verificar Documentação
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+    
+    - name: Verificar arquivos obrigatórios
+      run: |
+        required_files=("README.md" "LICENSE" "CHANGELOG.md" "CONTRIBUTING.md")
+        missing=()
+        
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "::error::Arquivo obrigatório faltando: $file"
+            missing+=("$file")
+          else
+            echo "✓ $file existe"
+          fi
+        done
+        
+        if [ ${#missing[@]} -gt 0 ]; then
+          exit 1
+        fi
+    
+    - name: Validar links no README
+      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        config-file: '.github/workflows/markdown-link-check-config.json'
+
+  security-check:
+    name: Verificação de Segurança
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+    
+    - name: Verificar hardcoded paths perigosos
+      shell: powershell
+      run: |
+        $dangerousPatterns = @(
+          'C:\\Windows\\System32',
+          'format\s+[C-Z]:',
+          'del\s+/[QS]\s+C:\\',
+          'rd\s+/[SQ]\s+C:\\'
+        )
+        
+        $scripts = Get-ChildItem -Path . -Filter *.bat -Recurse
+        $warnings = @()
+        
+        foreach ($script in $scripts) {
+          $content = Get-Content $script.FullName -Raw
+          
+          foreach ($pattern in $dangerousPatterns) {
+            if ($content -match $pattern) {
+              $warnings += "$($script.Name): Padrão perigoso detectado - $pattern"
+            }
+          }
+        }
+        
+        if ($warnings.Count -gt 0) {
+          foreach ($warning in $warnings) {
+            Write-Host "::warning::$warning"
+          }
+        } else {
+          Write-Host "✓ Nenhum padrão perigoso detectado"
+        }
