@@ -84,6 +84,24 @@ set KeyPath="D:\Dayz\Keys\AsKal.bikey"
 Build_PBO.bat
 ```
 
+### 🔬 Test Workbench build (experimental)
+Se quiser testar o empacotador do DayZ Workbench (CF) em vez do Mikero, há um wrapper de teste que baixa e executa `BinarizePBO.bat` do repositório CF Workbench:
+
+```batch
+Scripts\Build_PBO_Workbench.bat [ModFolderRelativeToPrefix]
+```
+
+Exemplo:
+
+```batch
+Scripts\Build_PBO_Workbench.bat \askal\Core
+```
+
+Notas:
+- O script cria `Scripts\WorkbenchTemp` e baixa o `BinarizePBO.bat` para ali.
+- Ajuste as variáveis no início do script (`keyDirectory`, `modName`, `modBuildDirectory`, `prefixLinkRoot`) conforme seu ambiente antes de rodar, ou passe o parâmetro do mod.
+- É experimental — examine a saída do console para diagnosticar problemas.
+
 ---
 
 ### 🎮 Start-Server.bat
