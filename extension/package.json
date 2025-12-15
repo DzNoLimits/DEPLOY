@@ -3,12 +3,12 @@
   "displayName": "Askal Dev. Tool",
   "description": "Ferramentas para gerenciamento e deploy do mod Askal (DayZ)",
   "version": "1.0.0",
-  "publisher": "askal-dev-tool",
+  "publisher": "askal",
   "engines": {
     "vscode": "^1.60.0"
   },
   "categories": ["Other"],
-  "icon": "media/icon.svg",
+  "icon": "media/icon.png",
   "keywords": ["dayz", "askal", "deploy", "mods"],
   "activationEvents": [
     "onStartupFinished"
