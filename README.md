@@ -239,6 +239,19 @@ Get-Logs.bat                       # Visualiza logs atuais
 
 ---
 
+## 🧰 Extensão VS Code — Botões rápidos
+
+A extensão adiciona botões na barra de status para executar os scripts locais em um terminal integrado. Cada botão executa diretamente o script correspondente na raiz do repositório:
+
+- **Build PBO:** `Scripts\\Build_PBO.bat`
+- **Start Server:** `Start-Server.bat`
+- **Start Client:** `Start-Client.bat`
+- **Kill DayZ:** `Kill-DayZ.bat`
+- **Auto Test:** `AUTORUN.ps1 -Action Full` (PowerShell)
+- **Get Logs:** `Get-Logs.bat`
+
+> Observação: os botões executam os scripts usando o terminal integrado do VS Code. Garanta que os caminhos nas variáveis do script estejam configurados para o seu ambiente.
+
 ## ⚠️ Troubleshooting
 
 ### Symlinks não funcionam

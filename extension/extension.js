@@ -2,12 +2,12 @@ const vscode = require('vscode');
 
 function activate(context) {
   const tasks = [
-    { command: 'dayz.buildPBO', label: '🔨 Build PBO', task: '🔨 Build PBO' },
-    { command: 'dayz.startServer', label: '🔌 Start Server', task: '🔌 Start Server' },
-    { command: 'dayz.startClient', label: '🎮 Start Client', task: '🎮 Start Client' },
-    { command: 'dayz.killInstances', label: '🛑 KILL', task: '🛑 KILL' },
-    { command: 'dayz.automateTest', label: '🚀 AUTO', task: '🚀 AUTO' },
-    { command: 'dayz.getLogs', label: '📖 Get-Logs', task: '📖 Get-Logs' }
+    { command: 'dayz.buildPBO', label: 'Build PBO', task: 'Scripts\\Build_PBO.bat' },
+    { command: 'dayz.startServer', label: 'Start Server', task: 'Start-Server.bat' },
+    { command: 'dayz.startClient', label: 'Start Client', task: 'Start-Client.bat' },
+    { command: 'dayz.killInstances', label: 'Kill DayZ', task: 'Kill-DayZ.bat' },
+    { command: 'dayz.automateTest', label: 'Auto Test', task: 'powershell -ExecutionPolicy Bypass -File AUTORUN.ps1 -Action Full' },
+    { command: 'dayz.getLogs', label: 'Get Logs', task: 'Get-Logs.bat' }
   ];
 
   // Criar botões na barra de status
@@ -20,7 +20,12 @@ function activate(context) {
 
     context.subscriptions.push(
       vscode.commands.registerCommand(command, () => {
-        vscode.commands.executeCommand('workbench.action.tasks.runTask', task);
+        // Create or reuse an integrated terminal and run the script/command
+        const termName = 'Askal';
+        let term = vscode.window.terminals.find(t => t.name === termName);
+        if (!term) term = vscode.window.createTerminal(termName);
+        term.show(true);
+        term.sendText(task, true);
       })
     );
 

@@ -8,7 +8,7 @@
     "vscode": "^1.60.0"
   },
   "categories": ["Other"],
-  "icon": "media/icon.png",
+  "icon": "media/askal_logo.png",
   "keywords": ["dayz", "askal", "deploy", "mods"],
   "activationEvents": [
     "onStartupFinished"
@@ -45,6 +45,5 @@
         "title": "Get-Logs"
       }
     ]
-  },
-  
+  }
 }
