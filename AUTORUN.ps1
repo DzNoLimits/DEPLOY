@@ -110,7 +110,22 @@ function Build-PBO {
         New-Item -Path $lockFile -ItemType File -Force | Out-Null
         Write-Host "  [INFO] Build iniciado" -ForegroundColor Cyan
 
-        $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -Wait -PassThru -NoNewWindow
+        $outLog = Join-Path $PSScriptRoot 'build_stdout.log'
+        $errLog = Join-Path $PSScriptRoot 'build_stderr.log'
+        if (Test-Path $outLog) { Remove-Item $outLog -Force -ErrorAction SilentlyContinue }
+        if (Test-Path $errLog) { Remove-Item $errLog -Force -ErrorAction SilentlyContinue }
+
+        $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -RedirectStandardOutput $outLog -RedirectStandardError $errLog -Wait -PassThru
+
+        # Dump captured output for diagnosis
+        if (Test-Path $outLog) {
+            Write-Host "`n--- PboProject STDOUT ---`n"
+            Get-Content $outLog | ForEach-Object { Write-Host $_ }
+        }
+        if (Test-Path $errLog) {
+            Write-Host "`n--- PboProject STDERR ---`n"
+            Get-Content $errLog | ForEach-Object { Write-Host $_ }
+        }
 
         if ($process.ExitCode -eq 0) {
             Write-Host "`n  [OK] Build completado com sucesso" -ForegroundColor Green
