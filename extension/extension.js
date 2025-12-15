@@ -15,19 +15,25 @@ function activate(context) {
 
   // Criar botões na barra de status
   const running = new Map();
+  const spinnerIntervals = new Map();
+  const statusItems = new Map();
+
+  const frames = ['|', '/', '-', '\\'];
+
   tasks.forEach(({ command, label, psAction }) => {
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     statusBarItem.command = command;
     statusBarItem.text = label;
     statusBarItem.tooltip = psAction ? `Run: AUTORUN.ps1 -Action ${psAction}` : `Click to run: ${label}`;
     statusBarItem.show();
+    statusItems.set(command, statusBarItem);
 
     context.subscriptions.push(
       vscode.commands.registerCommand(command, async () => {
         const cwd = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0].uri.fsPath) || undefined;
         if (psAction) {
           if (running.get(command)) {
-            vscode.window.showWarningMessage(`${label} is already running.`);
+            // already running; visually no-op
             return;
           }
 
@@ -37,12 +43,20 @@ function activate(context) {
           output.show(true);
           output.appendLine(`> Running AUTORUN.ps1 -Action ${action}`);
 
-          vscode.window.showInformationMessage(`Started: ${label}`);
-
           // Mark running
           running.set(command, true);
 
-          // Run via child_process so we can capture output and show notifications
+          // Start spinner
+          let idx = 0;
+          statusBarItem.command = undefined; // disable while running
+          statusBarItem.tooltip = `Running: ${label}`;
+          const iv = setInterval(() => {
+            statusBarItem.text = `${frames[idx]} ${label}`;
+            idx = (idx + 1) % frames.length;
+          }, 200);
+          spinnerIntervals.set(command, iv);
+
+          // Run via child_process to capture output
           const proc = spawn('powershell', psArgs, { cwd, shell: true });
 
           proc.stdout.on('data', (data) => {
@@ -55,11 +69,20 @@ function activate(context) {
           proc.on('close', (code) => {
             output.appendLine(`Process exited with code ${code}`);
             running.delete(command);
+            clearInterval(spinnerIntervals.get(command));
+            spinnerIntervals.delete(command);
+            // show final state on button
             if (code === 0) {
-              vscode.window.showInformationMessage(`${label} completed successfully`);
+              statusBarItem.text = `✔ ${label}`;
             } else {
-              vscode.window.showErrorMessage(`${label} failed (exit code ${code}). See Output: Askal`);
+              statusBarItem.text = `✖ ${label}`;
             }
+            // restore after short delay
+            setTimeout(() => {
+              statusBarItem.text = label;
+              statusBarItem.command = command;
+              statusBarItem.tooltip = psAction ? `Run: AUTORUN.ps1 -Action ${psAction}` : `Click to run: ${label}`;
+            }, 2000);
           });
         } else {
           // Fallback: run in terminal
@@ -68,7 +91,6 @@ function activate(context) {
           if (!term) term = vscode.window.createTerminal({ name: termName, cwd });
           term.show(true);
           term.sendText(label, true);
-          vscode.window.showInformationMessage(`Started: ${label}`);
         }
       })
     );
