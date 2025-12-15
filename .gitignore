@@ -35,8 +35,12 @@ $RECYCLE.BIN/
 
 # Node (se tiver extensão VSCode)
 node_modules/
+extension/node_modules/
 package-lock.json
 yarn.lock
+# VSIX packages
+*.vsix
+releases/
 
 # Build outputs
 *.pbo
