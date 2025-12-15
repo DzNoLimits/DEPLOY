@@ -283,26 +283,7 @@ Encontrou um bug ou tem uma sugestão? Abra uma issue.
 
 ---
 
-## Publicar a extensão no Marketplace
-
-Para publicar a extensão no Visual Studio Marketplace (para aparecer na busca pública):
-
-1. Crie um publisher no Marketplace (https://marketplace.visualstudio.com/manage)
-   - Sugestão de `publisher`: `askal-dev-tool`
-2. Gere um Personal Access Token (PAT) com escopo para publicar (Azure DevOps)
-3. No repositório do GitHub, adicione o segredo `VSCE_TOKEN` com o valor do PAT
-4. A extensão será publicada automaticamente quando você criar uma tag com o formato `v*` (por exemplo `v1.0.0`) e fizer push
-
-Comandos locais úteis:
-
-```bash
-# empacotar
-npm i -g vsce
-vsce package
-
-# publicar (usando PAT)
-vsce publish --pat <SEU_PAT>
-```
+<!-- Publicação removida: este repositório e os scripts são para uso local. -->
 
 
 ## 📄 Licença
