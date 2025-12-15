@@ -110,37 +110,7 @@ function Build-PBO {
         New-Item -Path $lockFile -ItemType File -Force | Out-Null
         Write-Host "  [INFO] Build iniciado" -ForegroundColor Cyan
 
-        $outLog = Join-Path $PSScriptRoot 'build_stdout.log'
-        $errLog = Join-Path $PSScriptRoot 'build_stderr.log'
-        if (Test-Path $outLog) { Remove-Item $outLog -Force -ErrorAction SilentlyContinue }
-        if (Test-Path $errLog) { Remove-Item $errLog -Force -ErrorAction SilentlyContinue }
-
-        Write-Host "  [DEBUG] PboProject Path: $($Config.PboProject)" -ForegroundColor DarkYellow
-        Write-Host "  [DEBUG] Argument list: $args" -ForegroundColor DarkYellow
-        Write-Host "  [DEBUG] PboProject exists: $(Test-Path $Config.PboProject)" -ForegroundColor DarkYellow
-        try {
-            $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -RedirectStandardOutput $outLog -RedirectStandardError $errLog -Wait -PassThru -ErrorAction Stop
-        } catch {
-            Write-Host "  [EXCEPTION] Failed to start PboProject: $_" -ForegroundColor Red
-            if (Test-Path $errLog) { Get-Content $errLog | ForEach-Object { Write-Host $_ } }
-            return $false
-        }
-
-        # Dump captured output for diagnosis
-        if (Test-Path $outLog) {
-            Write-Host "`n--- PboProject STDOUT ---`n"
-            Get-Content $outLog | ForEach-Object { Write-Host $_ }
-        }
-        if (Test-Path $errLog) {
-            Write-Host "`n--- PboProject STDERR ---`n"
-            Get-Content $errLog | ForEach-Object { Write-Host $_ }
-        }
-
-        Write-Host "  [DEBUG] Process Id: $($process.Id)  ExitCode: $($process.ExitCode)" -ForegroundColor DarkYellow
-        if ($null -eq $process) {
-            Write-Host "  [ERROR] Process object is null - cannot determine exit code" -ForegroundColor Red
-            return $false
-        }
+        $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -Wait -PassThru -NoNewWindow
 
         if ($process.ExitCode -eq 0) {
             Write-Host "`n  [OK] Build completado com sucesso" -ForegroundColor Green
