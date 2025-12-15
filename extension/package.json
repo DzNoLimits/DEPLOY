@@ -1,0 +1,49 @@
+{
+  "name": "askal-deploy",
+  "displayName": "Askal DEPLOY",
+  "description": "Ferramentas de deploy e teste para o mod Askal (DayZ)",
+  "version": "1.0.0",
+  "publisher": "askal",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/askal/askal-deploy"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "dayz.buildPBO",
+        "title": "Build PBO"
+      },
+      {
+        "command": "dayz.startServer",
+        "title": "Start Server"
+      },
+      {
+        "command": "dayz.startClient",
+        "title": "Start Client"
+      },
+      {
+        "command": "dayz.killInstances",
+        "title": "KILL"
+      },
+      {
+        "command": "dayz.automateTest",
+        "title": "AUTO"
+      },
+      {
+        "command": "dayz.getLogs",
+        "title": "Get-Logs"
+      }
+    ]
+  },
+  "dependencies": {
+    "vsce": "^2.15.0"
+  }
+}

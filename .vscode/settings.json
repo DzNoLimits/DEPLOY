@@ -1,0 +1,25 @@
+{
+    // Força uso do CMD.exe ao invés do PowerShell
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\cmd.exe",
+    "terminal.integrated.shellArgs.windows": [],
+    
+    // Configurações do terminal para melhor performance
+    "terminal.integrated.shellIntegration.enabled": false,
+    "terminal.integrated.enablePersistentSessions": false,
+    "terminal.integrated.persistentSessionReviveProcess": "never",
+    "terminal.integrated.confirmOnKill": "never",
+    
+    // Compartilhar terminal entre tasks
+    "task.problemMatchers.neverPrompt": true,
+    "task.quickOpen.showAll": false,
+    
+    // Configurações de build
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/*.log": true,
+        "**/*.rpt": true,
+        "**/*.mdmp": true
+    }
+}
