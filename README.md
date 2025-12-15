@@ -243,12 +243,12 @@ Get-Logs.bat                       # Visualiza logs atuais
 
 A extensão adiciona botões na barra de status para executar os scripts locais em um terminal integrado. Cada botão executa diretamente o script correspondente na raiz do repositório:
 
-- **Build PBO:** `Scripts\\Build_PBO.bat`
-- **Start Server:** `Start-Server.bat`
-- **Start Client:** `Start-Client.bat`
-- **Kill DayZ:** `Kill-DayZ.bat`
-- **Auto Test:** `AUTORUN.ps1 -Action Full` (PowerShell)
-- **Get Logs:** `Get-Logs.bat`
+-- **Build PBO:** `AUTORUN.ps1 -Action Build` (PowerShell)
+-- **Start Server:** `AUTORUN.ps1 -Action Server` (PowerShell)
+-- **Start Client:** `AUTORUN.ps1 -Action Client` (PowerShell)
+-- **Kill DayZ:** `AUTORUN.ps1 -Action Kill` (PowerShell)
+-- **Auto Test:** `AUTORUN.ps1 -Action Full` (PowerShell)
+-- **Get Logs:** `AUTORUN.ps1 -Action GetLogs` (PowerShell)
 
 > Observação: os botões executam os scripts usando o terminal integrado do VS Code. Garanta que os caminhos nas variáveis do script estejam configurados para o seu ambiente.
 

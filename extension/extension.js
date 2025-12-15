@@ -1,13 +1,15 @@
 const vscode = require('vscode');
 
 function activate(context) {
+  const psCmd = (action) => `powershell -NoProfile -ExecutionPolicy Bypass -File AUTORUN.ps1 -Action ${action}`;
+
   const tasks = [
-    { command: 'dayz.buildPBO', label: 'Build PBO', task: 'Scripts\\Build_PBO.bat' },
-    { command: 'dayz.startServer', label: 'Start Server', task: 'Start-Server.bat' },
-    { command: 'dayz.startClient', label: 'Start Client', task: 'Start-Client.bat' },
-    { command: 'dayz.killInstances', label: 'Kill DayZ', task: 'Kill-DayZ.bat' },
-    { command: 'dayz.automateTest', label: 'Auto Test', task: 'powershell -ExecutionPolicy Bypass -File AUTORUN.ps1 -Action Full' },
-    { command: 'dayz.getLogs', label: 'Get Logs', task: 'Get-Logs.bat' }
+    { command: 'dayz.buildPBO', label: 'Build PBO', task: psCmd('Build') },
+    { command: 'dayz.startServer', label: 'Start Server', task: psCmd('Server') },
+    { command: 'dayz.startClient', label: 'Start Client', task: psCmd('Client') },
+    { command: 'dayz.killInstances', label: 'Kill DayZ', task: psCmd('Kill') },
+    { command: 'dayz.automateTest', label: 'Auto Test', task: psCmd('Full') },
+    { command: 'dayz.getLogs', label: 'Get Logs', task: psCmd('GetLogs') }
   ];
 
   // Criar botões na barra de status
