@@ -78,7 +78,13 @@ function Build-PBO {
     Write-Host "`n========================================" -ForegroundColor Cyan
     Write-Host "BUILD - Compilando mod" -ForegroundColor Cyan
     Write-Host "========================================`n" -ForegroundColor Cyan
-    
+    $lockFile = Join-Path $PSScriptRoot 'build.lock'
+
+    if (Test-Path $lockFile) {
+        Write-Host "  [INFO] Build já está em execução (lockfile encontrado). Saindo." -ForegroundColor Yellow
+        return $true
+    }
+
     if (-not (Test-Path $Config.PboProject)) {
         Write-Host "  [ERRO] PboProject.exe não encontrado" -ForegroundColor Red
         return $false
@@ -97,15 +103,21 @@ function Build-PBO {
     
     # Compila
     $args = "+P +E=dayz +X=*.h,*.hpp,*.png,*.cpp,*.txt,thumbs.db,*.dep,*.bak,*.log +M=`"$($Config.ModDeploy)`" `"$($Config.ModSource)`""
-    
-    $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -Wait -PassThru -NoNewWindow
-    
-    if ($process.ExitCode -eq 0) {
-        Write-Host "`n  [OK] Build completado com sucesso" -ForegroundColor Green
-        return $true
-    } else {
-        Write-Host "`n  [ERRO] Build falhou (Exit Code: $($process.ExitCode))" -ForegroundColor Red
-        return $false
+
+    try {
+        New-Item -Path $lockFile -ItemType File -Force | Out-Null
+
+        $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -Wait -PassThru -NoNewWindow
+
+        if ($process.ExitCode -eq 0) {
+            Write-Host "`n  [OK] Build completado com sucesso" -ForegroundColor Green
+            return $true
+        } else {
+            Write-Host "`n  [ERRO] Build falhou (Exit Code: $($process.ExitCode))" -ForegroundColor Red
+            return $false
+        }
+    } finally {
+        if (Test-Path $lockFile) { Remove-Item $lockFile -Force -ErrorAction SilentlyContinue }
     }
 }
 

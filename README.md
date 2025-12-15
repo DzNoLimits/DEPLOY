@@ -254,6 +254,10 @@ A extensão adiciona botões na barra de status para executar os scripts locais 
 
 Após reinstalar a extensão, execute `Developer: Reload Window` no Command Palette para garantir que a versão mais recente esteja ativa.
 
+Nota sobre builds em loop:
+- O processo de build agora cria um arquivo de lock (`build.lock`) na raiz do repositório enquanto estiver em execução; se outro build for acionado enquanto um estiver ativo, o script detectará o lock e não iniciará um novo build.
+- Se um build ficar travado por alguma razão, remova manualmente o arquivo `build.lock` na raiz do repositório para liberar a execução.
+
 ## ⚠️ Troubleshooting
 
 ### Symlinks não funcionam
