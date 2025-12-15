@@ -50,6 +50,42 @@ function Stop-DayZProcesses {
     Start-Sleep -Seconds 2
 }
 
+# Função: Mostrar notificação (toast/balão)
+function Show-Notification {
+    param(
+        [string]$Title = 'Askal',
+        [string]$Message = '',
+        [string]$Type = 'Info'
+    )
+
+    # Try BurntToast if available
+    if (Get-Module -ListAvailable -Name BurntToast) {
+        try {
+            Import-Module BurntToast -ErrorAction Stop
+            New-BurntToastNotification -Text $Title, $Message
+            return
+        } catch {
+            # fallthrough
+        }
+    }
+
+    # Fallback: balloon tip via Windows Forms
+    try {
+        Add-Type -AssemblyName System.Windows.Forms
+        Add-Type -AssemblyName System.Drawing
+        $ni = New-Object System.Windows.Forms.NotifyIcon
+        $ni.Icon = [System.Drawing.SystemIcons]::Information
+        $ni.BalloonTipTitle = $Title
+        $ni.BalloonTipText = $Message
+        $ni.Visible = $true
+        $ni.ShowBalloonTip(4000)
+        Start-Sleep -Seconds 5
+        $ni.Dispose()
+    } catch {
+        Write-Host "[Notify] $Title - $Message"
+    }
+}
+
 # Função: Clean Logs
 function Clear-DayZLogs {
     Write-Host "`n========================================" -ForegroundColor Cyan
@@ -82,6 +118,7 @@ function Build-PBO {
 
     if (Test-Path $lockFile) {
         Write-Host "  [INFO] Build já está em execução (lockfile encontrado). Saindo." -ForegroundColor Yellow
+        Show-Notification -Title 'Build' -Message 'Build já em execução. Cancelando nova execução.' -Type 'Warning'
         return $true
     }
 
@@ -106,14 +143,17 @@ function Build-PBO {
 
     try {
         New-Item -Path $lockFile -ItemType File -Force | Out-Null
+        Show-Notification -Title 'Build' -Message 'Build iniciado' -Type 'Info'
 
         $process = Start-Process -FilePath $Config.PboProject -ArgumentList $args -Wait -PassThru -NoNewWindow
 
         if ($process.ExitCode -eq 0) {
             Write-Host "`n  [OK] Build completado com sucesso" -ForegroundColor Green
+            Show-Notification -Title 'Build' -Message 'Build completado com sucesso' -Type 'Info'
             return $true
         } else {
             Write-Host "`n  [ERRO] Build falhou (Exit Code: $($process.ExitCode))" -ForegroundColor Red
+            Show-Notification -Title 'Build' -Message "Build falhou (Exit Code: $($process.ExitCode))" -Type 'Error'
             return $false
         }
     } finally {

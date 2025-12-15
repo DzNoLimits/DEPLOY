@@ -258,6 +258,10 @@ Nota sobre builds em loop:
 - O processo de build agora cria um arquivo de lock (`build.lock`) na raiz do repositório enquanto estiver em execução; se outro build for acionado enquanto um estiver ativo, o script detectará o lock e não iniciará um novo build.
 - Se um build ficar travado por alguma razão, remova manualmente o arquivo `build.lock` na raiz do repositório para liberar a execução.
 
+Notificações e feedback visual:
+- A extensão exibe notificações do VS Code quando uma ação é iniciada e quando termina (sucesso/falha). Consulte o painel `Output → Askal` para ver a saída completa das execuções de PowerShell.
+- O `AUTORUN.ps1` tenta exibir notificações do sistema (Toast) quando possível. Para notificações nativas no Windows instale o módulo PowerShell `BurntToast` (opcional). Se não estiver disponível, o script usa um balão de notificação via Windows Forms como fallback.
+
 ## ⚠️ Troubleshooting
 
 ### Symlinks não funcionam
