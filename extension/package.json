@@ -1,12 +1,15 @@
 {
   "name": "askal-deploy",
-  "displayName": "Askal DEPLOY",
-  "description": "Ferramentas de deploy e teste para o mod Askal (DayZ)",
+  "displayName": "Askal Dev. Tool",
+  "description": "Ferramentas para gerenciamento e deploy do mod Askal (DayZ)",
   "version": "1.0.0",
-  "publisher": "askal",
+  "publisher": "askal-dev-tool",
   "engines": {
     "vscode": "^1.60.0"
   },
+  "categories": ["Other"],
+  "icon": "media/icon.svg",
+  "keywords": ["dayz", "askal", "deploy", "mods"],
   "activationEvents": [
     "onStartupFinished"
   ],
